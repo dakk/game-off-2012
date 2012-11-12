@@ -24,6 +24,8 @@
 
   pp.spr.player.left = new pp.Sprite('data/pl.png', 19, 0, 0);
 
+  pp.spr.player.mask = new pp.Sprite('data/playermask.png', 1, 0, 0);
+
   pp.spr.objects = {};
 
   pp.spr.objects.p10 = new pp.Sprite('data/p10.png', 1, 0, 0);
@@ -38,8 +40,12 @@
 
   pp.spr.objects.m20 = new pp.Sprite('data/m20.png', 1, 0, 0);
 
+  pp.spr.objects.mask = new pp.Sprite('data/obmask.png', 1, 0, 0);
+
   game = function() {
-    var _this = this;
+    var best_score,
+      _this = this;
+    best_score = 0;
     pp.obj.start = {
       mask: pp.spr.start.mask,
       depth: -1,
@@ -73,14 +79,14 @@
         t.countdown = new pp.Alarm((function() {
           return pp.loop.room = pp.rm.gameover;
         }));
-        return t.countdown.time = pp.loop.rate * 20;
+        return t.countdown.time = pp.loop.rate * 10;
       },
       draw: function(t) {
         pp.draw.textHalign = 'left';
         pp.draw.textValign = 'bottom';
         pp.draw.color = '#999999';
-        pp.draw.font = 'normal normal normal 20px Georgia';
-        pp.draw.text(20, 35, 'Lines of code: ' + pp.global.score);
+        pp.draw.font = 'normal normal normal 18px Georgia';
+        pp.draw.text(20, 35, 'Lines of code pushed: ' + pp.global.score);
         if (t.countdown.time <= (pp.loop.rate * 5)) {
           pp.draw.color = 'red';
         }
@@ -89,29 +95,68 @@
       }
     };
     pp.obj.player = {
-      sprite: pp.spr.player.left,
+      mask: pp.spr.player.mask.mask,
+      spritel: pp.spr.player.left,
+      spriter: pp.spr.player.right,
       i: 0,
+      dir: true,
       initialize: function(t) {
         t.x = 640 / 2;
-        return t.y = 480 - 80;
+        return t.y = 410;
       },
-      tick: function(t) {},
+      tick: function(t) {
+        if (pp.key.left.pressed) {
+          t.dir = true;
+          t.x -= 10;
+          if (t.x < 5) {
+            t.x = 5;
+          }
+        }
+        if (pp.key.right.pressed) {
+          t.dir = false;
+          t.x += 10;
+          if (t.x > 570) {
+            return t.x = 570;
+          }
+        }
+      },
       draw: function(t) {
-        t.sprite.draw(t.x, t.y, t.i);
+        if (t.dir) {
+          t.spriter.draw(t.x, t.y, t.i);
+        } else {
+          t.spritel.draw(t.x, t.y, t.i);
+        }
         return t.i = (t.i + 1) % 19;
       }
     };
     pp.obj.objects = {
       parent: {
-        mask: pp.spr.objects.p20.mask,
+        mask: pp.spr.objects.mask.mask,
         initialize: function(t) {
           t.x = 5 + Math.floor(Math.random() * 600);
           t.y = 40;
           return t.angle = 0;
         },
         tick: function(t) {
+          var p;
           t.y += t.vspeed;
-          if (t.y > 450) {
+          if (t.y > 410) {
+            p = pp.obj.player;
+            if (!((t.x > (p.x + 64)) || ((t.x + 32) < p.x))) {
+              pp.global.score += t.value;
+              pp.loop.remove(t);
+              if (pp.global.score < 0) {
+                pp.global.score = 0;
+              }
+            }
+          }
+          if (t.y > 440) {
+            if (t.value > 0) {
+              pp.global.score -= t.value / 5;
+            }
+            if (pp.global.score < 0) {
+              pp.global.score = 0;
+            }
             return pp.loop.remove(t);
           }
         },
@@ -120,27 +165,33 @@
         }
       },
       p50: {
-        vspeed: 4,
+        vspeed: 5,
+        value: 50,
         sprite: pp.spr.objects.p50
       },
       p20: {
-        vspeed: 3,
+        vspeed: 4,
+        value: 20,
         sprite: pp.spr.objects.p20
       },
       p10: {
-        vspeed: 2,
+        vspeed: 3,
+        value: 10,
         sprite: pp.spr.objects.p10
       },
       m20: {
-        vspeed: 4,
+        vspeed: 5,
+        value: -20,
         sprite: pp.spr.objects.m20
       },
       m10: {
-        vspeed: 3,
+        vspeed: 4,
+        value: -10,
         sprite: pp.spr.objects.m10
       },
       m5: {
-        vspeed: 2,
+        vspeed: 3,
+        value: -5,
         sprite: pp.spr.objects.m5
       }
     };
@@ -155,8 +206,8 @@
         pp.draw.textHalign = 'left';
         pp.draw.textValign = 'bottom';
         pp.draw.color = '#bbbbbb';
-        pp.draw.font = 'normal normal normal 40px Georgia';
-        return pp.draw.text(80, 250, 'With ' + pp.global.score + ' lines of code');
+        pp.draw.font = 'normal normal normal 35px Georgia';
+        return pp.draw.text(80, 250, 'With ' + pp.global.score + ' lines of code pushed');
       }
     };
     pp.obj.retry = {
@@ -195,11 +246,14 @@
         var ob;
         ob = pp.obj.objects;
         pp.loop.beget(Math.choose(ob.p10, ob.m5, ob.p20, ob.m10, ob.p50, ob.m20, ob.p10));
-        return this.time = pp.loop.rate * 2;
+        return this.time = pp.loop.rate * 0.5;
       });
       return creator.time = 0;
     };
     pp.rm.gameover = function() {
+      if (pp.global.score > best_score) {
+        best_score = pp.global.score;
+      }
       pp.loop.register(pp.obj.gameover, 0, 0);
       pp.loop.register(pp.obj.scoreover, 0, 0);
       return pp.loop.register(pp.obj.retry, 0, 0);
