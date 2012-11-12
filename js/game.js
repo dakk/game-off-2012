@@ -18,6 +18,26 @@
 
   pp.spr.retry = new pp.Sprite('data/retry.png', 1, 0, 0);
 
+  pp.spr.player = {};
+
+  pp.spr.player.right = new pp.Sprite('data/pr.png', 19, 0, 0);
+
+  pp.spr.player.left = new pp.Sprite('data/pl.png', 19, 0, 0);
+
+  pp.spr.objects = {};
+
+  pp.spr.objects.p10 = new pp.Sprite('data/p10.png', 1, 0, 0);
+
+  pp.spr.objects.p20 = new pp.Sprite('data/p20.png', 1, 0, 0);
+
+  pp.spr.objects.p50 = new pp.Sprite('data/p50.png', 1, 0, 0);
+
+  pp.spr.objects.m5 = new pp.Sprite('data/m5.png', 1, 0, 0);
+
+  pp.spr.objects.m10 = new pp.Sprite('data/m10.png', 1, 0, 0);
+
+  pp.spr.objects.m20 = new pp.Sprite('data/m20.png', 1, 0, 0);
+
   game = function() {
     var _this = this;
     pp.obj.start = {
@@ -53,7 +73,7 @@
         t.countdown = new pp.Alarm((function() {
           return pp.loop.room = pp.rm.gameover;
         }));
-        return t.countdown.time = pp.loop.rate * 99;
+        return t.countdown.time = pp.loop.rate * 20;
       },
       draw: function(t) {
         pp.draw.textHalign = 'left';
@@ -66,6 +86,77 @@
         }
         pp.draw.font = 'normal normal normal 16px Georgia';
         return pp.draw.text(510, 35, Math.ceil(t.countdown.time / pp.loop.rate) + ' seconds left');
+      }
+    };
+    pp.obj.player = {
+      sprite: pp.spr.player.left,
+      i: 0,
+      initialize: function(t) {
+        t.x = 640 / 2;
+        return t.y = 480 - 80;
+      },
+      tick: function(t) {},
+      draw: function(t) {
+        t.sprite.draw(t.x, t.y, t.i);
+        return t.i = (t.i + 1) % 19;
+      }
+    };
+    pp.obj.objects = {
+      parent: {
+        mask: pp.spr.objects.p20.mask,
+        initialize: function(t) {
+          t.x = 5 + Math.floor(Math.random() * 600);
+          t.y = 40;
+          return t.angle = 0;
+        },
+        tick: function(t) {
+          t.y += t.vspeed;
+          if (t.y > 450) {
+            return pp.loop.remove(t);
+          }
+        },
+        draw: function(t) {
+          return t.sprite.draw(t.x, t.y);
+        }
+      },
+      p50: {
+        vspeed: 4,
+        sprite: pp.spr.objects.p50
+      },
+      p20: {
+        vspeed: 3,
+        sprite: pp.spr.objects.p20
+      },
+      p10: {
+        vspeed: 2,
+        sprite: pp.spr.objects.p10
+      },
+      m20: {
+        vspeed: 4,
+        sprite: pp.spr.objects.m20
+      },
+      m10: {
+        vspeed: 3,
+        sprite: pp.spr.objects.m10
+      },
+      m5: {
+        vspeed: 2,
+        sprite: pp.spr.objects.m5
+      }
+    };
+    pp.obj.objects.p50.proto = pp.obj.objects.parent;
+    pp.obj.objects.p20.proto = pp.obj.objects.parent;
+    pp.obj.objects.p10.proto = pp.obj.objects.parent;
+    pp.obj.objects.m5.proto = pp.obj.objects.parent;
+    pp.obj.objects.m20.proto = pp.obj.objects.parent;
+    pp.obj.objects.m10.proto = pp.obj.objects.parent;
+    pp.obj.scoreover = {
+      draw: function(t) {
+        pp.draw.textHalign = 'left';
+        pp.draw.textValign = 'bottom';
+        pp.draw.color = '#bbbbbb';
+        pp.draw.font = 'normal normal normal 40px Georgia';
+        return pp.draw.text(80, 250, 'With ' + pp.global.score + ' lines of code');
       }
     };
     pp.obj.retry = {
@@ -95,12 +186,22 @@
       return pp.loop.register(pp.obj.start, 0, 0);
     };
     pp.rm.play = function() {
+      var creator;
       pp.global.score = 0;
       pp.loop.register(pp.obj.background, 0, 0);
-      return pp.loop.register(pp.obj.score, 0, 0);
+      pp.loop.register(pp.obj.score, 0, 0);
+      pp.loop.register(pp.obj.player, 0, 0);
+      creator = new pp.Alarm(function() {
+        var ob;
+        ob = pp.obj.objects;
+        pp.loop.beget(Math.choose(ob.p10, ob.m5, ob.p20, ob.m10, ob.p50, ob.m20, ob.p10));
+        return this.time = pp.loop.rate * 2;
+      });
+      return creator.time = 0;
     };
     pp.rm.gameover = function() {
       pp.loop.register(pp.obj.gameover, 0, 0);
+      pp.loop.register(pp.obj.scoreover, 0, 0);
       return pp.loop.register(pp.obj.retry, 0, 0);
     };
     pp.loop.active = true;
