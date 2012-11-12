@@ -23,8 +23,12 @@
     pp.obj.start = {
       mask: pp.spr.start.mask,
       depth: -1,
+      initialize: function(t) {
+        t.x = 640 / 2 - 114 / 2;
+        return t.y = 300;
+      },
       draw: function(t) {
-        return pp.spr.start.draw(0, 0);
+        return pp.spr.start.draw(t.x, t.y);
       },
       tick: function(t) {
         if (pp.mouse.left.down && pp.collision.point(t, pp.mouse.x, pp.mouse.y, false)) {
@@ -45,19 +49,34 @@
       }
     };
     pp.obj.score = {
+      initialize: function(t) {
+        t.countdown = new pp.Alarm((function() {
+          return pp.loop.room = pp.rm.gameover;
+        }));
+        return t.countdown.time = pp.loop.rate * 99;
+      },
       draw: function(t) {
         pp.draw.textHalign = 'left';
         pp.draw.textValign = 'bottom';
-        pp.draw.color = 'white';
+        pp.draw.color = '#999999';
         pp.draw.font = 'normal normal normal 20px Georgia';
-        return pp.draw.text(0, 20, 'Score: ' + pp.global.score);
+        pp.draw.text(20, 35, 'Lines of code: ' + pp.global.score);
+        if (t.countdown.time <= (pp.loop.rate * 5)) {
+          pp.draw.color = 'red';
+        }
+        pp.draw.font = 'normal normal normal 16px Georgia';
+        return pp.draw.text(510, 35, Math.ceil(t.countdown.time / pp.loop.rate) + ' seconds left');
       }
     };
     pp.obj.retry = {
       mask: pp.spr.retry.mask,
       depth: -1,
+      initialize: function(t) {
+        t.x = 640 / 2 - 132 / 2;
+        return t.y = 300;
+      },
       draw: function(t) {
-        return pp.spr.retry.draw(0, 0);
+        return pp.spr.retry.draw(t.x, t.y);
       },
       tick: function(t) {
         if (pp.mouse.left.down && pp.collision.point(t, pp.mouse.x, pp.mouse.y, false)) {

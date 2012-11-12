@@ -1,0 +1,14 @@
+PuPu (Push and Pull): 
+    oggetti che cadono (codice sorgente o revision) e sotto l'octocat che tira e spinge una scatola per catturare 
+    gli oggetti. 
+    
+    Gli oggetti sono:
+        1. Commit, rappresentati da un segno +/- ed il numero di righe aggiunte/rimosse
+    
+    Il punteggio sara' dato (possibilita'):
+        1. Totale
+        2. dal numero di oggetti catturati consecutivamente
+        3. dal numero di oggetti catturati - 1/4 di quelli mancati
+        
+    Il valore del punteggio e':
+        1. Il numero di righe di codice totalizzate in 100 secondi
