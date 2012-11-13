@@ -21,13 +21,14 @@ pp = PP
 pp.init("game", 640, 480)
 pp.loop.rate = 32
 
+
 # Load resources
+pp.spr.loading = new pp.Sprite('data/loading.png',1,0,0)
 pp.spr.welcome = new pp.Sprite('data/welcome.png',1,0,0)
 pp.spr.start = new pp.Sprite('data/start.png',1,0,0)
 pp.spr.background = new pp.Sprite('data/background.png',1,0,0)
 pp.spr.gameover = new pp.Sprite('data/gameover.png',1,0,0)
 pp.spr.retry = new pp.Sprite('data/retry.png',1,0,0)
-
 
 pp.spr.player = {}
 pp.spr.player.right = new pp.Sprite('data/pr.png',19,0,0)
@@ -43,12 +44,28 @@ pp.spr.objects.m10 = new pp.Sprite('data/m10.png',1,0,0)
 pp.spr.objects.m20 = new pp.Sprite('data/m20.png',1,0,0)
 pp.spr.objects.mask = new pp.Sprite('data/obmask.png',1,0,0)
 
+pp.snd.mhit = new pp.Sound('data/sounds/dong02.ogg')
+pp.snd.lastsec = new pp.Sound('data/sounds/dong03.ogg')
+pp.snd.end = new pp.Sound('data/sounds/stop01.ogg')
+pp.snd.button = new pp.Sound('data/sounds/bass_acid01.ogg')
 
 pp.global.best_score = 0
 
 
+drawPercentage = =>
+    percent = Math.round((pp.load.completed/pp.load.total) * 100)
+    pp.draw.rectangle(0, 0, 640, 480, false, '#fff')
+    pp.draw.font = 'normal normal normal 25px Georgia'
+    pp.draw.color = '#444'
+    pp.draw.textHalign = 'center'
+    #pp.draw.rectangle(10, 325, percent * 620 / 100 + 10, 328, false, '#333')
+    pp.draw.text(320, 240, 'Loading '+percent+'% ...')
+
+loadingBar = window.setInterval(drawPercentage, 50)
+
 # Game function
 game = -> 
+    window.clearInterval(loadingBar)
     
     # Welcome objects
     pp.obj.start =
@@ -62,6 +79,7 @@ game = ->
             pp.spr.start.draw(t.x, t.y)
         tick: (t) =>
             if pp.mouse.left.down and pp.collision.point(t, pp.mouse.x, pp.mouse.y,false)
+                pp.snd.button.play()
                 pp.loop.room = pp.rm.play
 
     pp.obj.welcome =
@@ -148,6 +166,11 @@ game = ->
                         pp.global.score += t.value
                         pp.loop.remove(t)
                         
+                        if t.value < 0
+                            pp.snd.mhit.play()
+                        #else
+                        #    pp.snd.phit.play()
+                        
                         if pp.global.score < 0
                             pp.global.score = 0
                 
@@ -231,6 +254,7 @@ game = ->
             pp.spr.retry.draw(t.x, t.y)
         tick: (t) =>
             if pp.mouse.left.down and pp.collision.point(t, pp.mouse.x, pp.mouse.y,false)
+                pp.snd.button.play()
                 pp.loop.room = pp.rm.play
 
     pp.obj.gameover =
@@ -265,12 +289,14 @@ game = ->
         if pp.global.score > pp.global.best_score
             pp.global.best_score = pp.global.score
             
+        pp.snd.end.play()
+            
         pp.loop.register(pp.obj.gameover, 0, 0)
         pp.loop.register(pp.obj.scoreover, 0, 0)
         pp.loop.register(pp.obj.retry, 0, 0)
         
-            
     
+        
     
     # Set the initial gamestate
     pp.loop.active = true

@@ -31,7 +31,8 @@ Use the left/right key to move the nyantocat, or touch in the side where do you 
 
 
 ## To do
-- Add sounds
+- Music
+- Share button (twitter/fb)
 
 
 ## External resources
