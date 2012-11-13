@@ -6,6 +6,11 @@ Help the nyanoctocat to push the greatest number of lines of code.
 Use the left/right key to move the nyantocat, or touch in the side where do you want to move.
 
 
+## Screenshoots
+![](screen/start.png)
+![](screen/play.png)
+![](screen/over.png)
+
 ## License 
     pushTheCode.
     Copyright (C) 2012,  Davide Gessa
