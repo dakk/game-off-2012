@@ -7,9 +7,9 @@ Use the left/right key to move the nyantocat, or touch in the side where do you 
 
 
 ## Screenshoots
-![](screen/start.png)
-![](screen/play.png)
-![](screen/over.png)
+![](https://github.com/dakk/game-off-2012/raw/master/screen/start.png)
+![](https://github.com/dakk/game-off-2012/raw/master/screen/play.png)
+![](https://github.com/dakk/game-off-2012/raw/master/screen/over.png)
 
 ## License 
     pushTheCode.
