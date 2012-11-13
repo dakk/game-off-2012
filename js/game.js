@@ -6,7 +6,7 @@
 
   pp.init("game", 640, 480);
 
-  pp.loop.rate = 30;
+  pp.loop.rate = 32;
 
   pp.spr.welcome = new pp.Sprite('data/welcome.png', 1, 0, 0);
 
@@ -42,16 +42,16 @@
 
   pp.spr.objects.mask = new pp.Sprite('data/obmask.png', 1, 0, 0);
 
+  pp.global.best_score = 0;
+
   game = function() {
-    var best_score,
-      _this = this;
-    best_score = 0;
+    var _this = this;
     pp.obj.start = {
       mask: pp.spr.start.mask,
       depth: -1,
       initialize: function(t) {
-        t.x = 640 / 2 - 114 / 2;
-        return t.y = 300;
+        t.x = 520;
+        return t.y = 10;
       },
       draw: function(t) {
         return pp.spr.start.draw(t.x, t.y);
@@ -79,14 +79,14 @@
         t.countdown = new pp.Alarm((function() {
           return pp.loop.room = pp.rm.gameover;
         }));
-        return t.countdown.time = pp.loop.rate * 10;
+        return t.countdown.time = pp.loop.rate * 59;
       },
       draw: function(t) {
         pp.draw.textHalign = 'left';
         pp.draw.textValign = 'bottom';
         pp.draw.color = '#999999';
         pp.draw.font = 'normal normal normal 18px Georgia';
-        pp.draw.text(20, 35, 'Lines of code pushed: ' + pp.global.score);
+        pp.draw.text(20, 35, 'Lines of code pushed: ' + pp.global.score + ' (best: ' + pp.global.best_score + ')');
         if (t.countdown.time <= (pp.loop.rate * 5)) {
           pp.draw.color = 'red';
         }
@@ -105,14 +105,14 @@
         return t.y = 410;
       },
       tick: function(t) {
-        if (pp.key.left.pressed) {
+        if (pp.key.left.pressed || (pp.mouse.left.pressed && pp.mouse.x < t.x)) {
           t.dir = true;
           t.x -= 10;
           if (t.x < 5) {
             t.x = 5;
           }
         }
-        if (pp.key.right.pressed) {
+        if (pp.key.right.pressed || (pp.mouse.left.pressed && pp.mouse.x > t.x)) {
           t.dir = false;
           t.x += 10;
           if (t.x > 570) {
@@ -152,7 +152,9 @@
           }
           if (t.y > 440) {
             if (t.value > 0) {
-              pp.global.score -= t.value / 5;
+              pp.global.score -= Math.floor(t.value / 10);
+            } else {
+              pp.global.score += Math.floor(Math.abs(t.value) / 10);
             }
             if (pp.global.score < 0) {
               pp.global.score = 0;
@@ -214,8 +216,8 @@
       mask: pp.spr.retry.mask,
       depth: -1,
       initialize: function(t) {
-        t.x = 640 / 2 - 132 / 2;
-        return t.y = 300;
+        t.x = 500;
+        return t.y = 10;
       },
       draw: function(t) {
         return pp.spr.retry.draw(t.x, t.y);
@@ -251,8 +253,8 @@
       return creator.time = 0;
     };
     pp.rm.gameover = function() {
-      if (pp.global.score > best_score) {
-        best_score = pp.global.score;
+      if (pp.global.score > pp.global.best_score) {
+        pp.global.best_score = pp.global.score;
       }
       pp.loop.register(pp.obj.gameover, 0, 0);
       pp.loop.register(pp.obj.scoreover, 0, 0);
