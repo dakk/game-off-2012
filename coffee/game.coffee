@@ -2,7 +2,7 @@
 pp = PP
 
 pp.init("game", 640, 480)
-pp.loop.rate = 30
+pp.loop.rate = 32
 
 # Load resources
 pp.spr.welcome = new pp.Sprite('data/welcome.png',1,0,0)
@@ -27,9 +27,11 @@ pp.spr.objects.m20 = new pp.Sprite('data/m20.png',1,0,0)
 pp.spr.objects.mask = new pp.Sprite('data/obmask.png',1,0,0)
 
 
+pp.global.best_score = 0
+
+
 # Game function
 game = -> 
-    best_score = 0
     
     # Welcome objects
     pp.obj.start =
@@ -37,8 +39,8 @@ game = ->
         depth: -1    
         
         initialize: (t) =>
-            t.x = 640/2 - 114/2
-            t.y = 300
+            t.x = 520
+            t.y = 10
         draw: (t) => 
             pp.spr.start.draw(t.x, t.y)
         tick: (t) =>
@@ -60,14 +62,14 @@ game = ->
     pp.obj.score =     
         initialize: (t) =>
             t.countdown = new pp.Alarm (-> pp.loop.room = pp.rm.gameover)
-            t.countdown.time = pp.loop.rate * 10
+            t.countdown.time = pp.loop.rate * 59
 				   
-        draw: (t) =>
+        draw: (t) =>                
             pp.draw.textHalign = 'left'
             pp.draw.textValign = 'bottom'
             pp.draw.color = '#999999'
             pp.draw.font = 'normal normal normal 18px Georgia'
-            pp.draw.text(20,35,'Lines of code pushed: '+pp.global.score)
+            pp.draw.text(20,35,'Lines of code pushed: '+pp.global.score+' (best: '+pp.global.best_score+')')
             
             if t.countdown.time <= (pp.loop.rate * 5)
                 pp.draw.color = 'red'
@@ -134,7 +136,9 @@ game = ->
                 
                 if t.y > 440
                     if t.value > 0
-                        pp.global.score -= t.value / 5
+                        pp.global.score -= Math.floor(t.value / 10)
+                    else
+                        pp.global.score += Math.floor(Math.abs(t.value) / 10)
                             
                     if pp.global.score < 0
                         pp.global.score = 0
@@ -204,8 +208,8 @@ game = ->
         depth: -1    
         
         initialize: (t) =>
-            t.x = 640/2 - 132/2
-            t.y = 300        
+            t.x = 500
+            t.y = 10  
         draw: (t) => 
             pp.spr.retry.draw(t.x, t.y)
         tick: (t) =>
@@ -241,8 +245,8 @@ game = ->
         
     # Gameover gamestate
     pp.rm.gameover = =>
-        if pp.global.score > best_score
-            best_score = pp.global.score
+        if pp.global.score > pp.global.best_score
+            pp.global.best_score = pp.global.score
             
         pp.loop.register(pp.obj.gameover, 0, 0)
         pp.loop.register(pp.obj.scoreover, 0, 0)
