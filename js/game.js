@@ -105,14 +105,14 @@
         return t.y = 410;
       },
       tick: function(t) {
-        if (pp.key.left.pressed) {
+        if (pp.key.left.pressed || (pp.mouse.left.pressed && pp.mouse.x < t.x)) {
           t.dir = true;
           t.x -= 10;
           if (t.x < 5) {
             t.x = 5;
           }
         }
-        if (pp.key.right.pressed) {
+        if (pp.key.right.pressed || (pp.mouse.left.pressed && pp.mouse.x > t.x)) {
           t.dir = false;
           t.x += 10;
           if (t.x > 570) {

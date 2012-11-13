@@ -1,3 +1,20 @@
+# pushTheCode.
+# Copyright (C) 2012,  Davide Gessa
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 # Init the engine
 pp = PP
 
@@ -90,18 +107,18 @@ game = ->
             t.y = 410
             
         tick: (t) =>   
-            if pp.key.left.pressed
+            if (pp.key.left.pressed) or (pp.mouse.left.pressed && pp.mouse.x < t.x)
                 t.dir = true
                 t.x -= 10
                 if t.x < 5 
                     t.x = 5
                 
-            if pp.key.right.pressed
+            if (pp.key.right.pressed) or (pp.mouse.left.pressed && pp.mouse.x > t.x)
                 t.dir = false
                 t.x += 10
                 if t.x > 570
                     t.x = 570
-                
+                                    
         draw: (t) =>
             if t.dir
                 t.spriter.draw(t.x,t.y,t.i)
