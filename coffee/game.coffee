@@ -20,7 +20,7 @@ pp = PP
 
 pp.init("game", 640, 480)
 pp.loop.rate = 32
-
+#touch(pp)
 
 # Load resources
 pp.spr.loading = new pp.Sprite('data/loading.png',1,0,0)
