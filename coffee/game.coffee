@@ -106,8 +106,7 @@ game = ->
             pp.draw.font = 'normal normal normal 18px Georgia'
             pp.draw.text(20,35,'Lines of code pushed: '+pp.global.score+' (best: '+pp.global.best_score+')')
             
-            if t.countdown.time <= (pp.loop.rate * 5)
-                pp.draw.color = 'red'
+            pp.draw.color = 'red' if (t.countdown.time <= (pp.loop.rate * 5))
 			    
             pp.draw.font = 'normal normal normal 16px Georgia'
             pp.draw.text(510,35,Math.ceil(t.countdown.time/pp.loop.rate)+' seconds left')
@@ -128,14 +127,14 @@ game = ->
             if (pp.key.left.pressed) or (pp.mouse.left.pressed && pp.mouse.x < t.x)
                 t.dir = true
                 t.x -= 10
-                if t.x < 5 
-                    t.x = 5
+                t.x = 5 if (t.x < 5)
+                    
                 
             if (pp.key.right.pressed) or (pp.mouse.left.pressed && pp.mouse.x > t.x)
                 t.dir = false
                 t.x += 10
-                if t.x > 570
-                    t.x = 570
+                t.x = 570 if (t.x > 570)
+
                                     
         draw: (t) =>
             if t.dir
@@ -171,8 +170,8 @@ game = ->
                         #else
                         #    pp.snd.phit.play()
                         
-                        if pp.global.score < 0
-                            pp.global.score = 0
+                        pp.global.score = 0 if (pp.global.score < 0)
+
                 
                 if t.y > 440
                     if t.value > 0
@@ -180,8 +179,8 @@ game = ->
                     else
                         pp.global.score += Math.floor(Math.abs(t.value) / 10)
                             
-                    if pp.global.score < 0
-                        pp.global.score = 0
+                    pp.global.score = 0 if (pp.global.score < 0)
+                        
                     pp.loop.remove(t)
                             
 				     
@@ -286,8 +285,7 @@ game = ->
         
     # Gameover gamestate
     pp.rm.gameover = =>
-        if pp.global.score > pp.global.best_score
-            pp.global.best_score = pp.global.score
+        pp.global.best_score = pp.global.score if (pp.global.score > pp.global.best_score)
             
         pp.snd.end.play()
             
