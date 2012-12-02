@@ -30,11 +30,6 @@ Use the left/right key to move the nyantocat, or touch in the side where do you 
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-## To do
-- Music
-- Share button (twitter/fb)
-
-
 ## External resources
 - PropulsionJS (http://www.propulsionjs.com)
 - Twitter Bootstrap (http://twitter.github.com/bootstrap)
